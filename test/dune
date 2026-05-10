@@ -1,0 +1,19 @@
+(test
+ (name test_movement)
+ (libraries final_project ounit2))
+
+(test
+ (name test_bullet)
+ (libraries final_project ounit2))
+
+(test
+ (name test_player)
+ (libraries final_project ounit2))
+
+(test
+ (name test_bullet_pattern)
+ (libraries final_project ounit2))
+
+(test
+ (name test_enemy)
+ (libraries final_project ounit2))

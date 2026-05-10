@@ -1,0 +1,7 @@
+_build/
+_opam/
+_coverage/
+test/debug
+.claude/
+.claude/
+bisect*.coverage

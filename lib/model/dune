@@ -1,0 +1,4 @@
+(library
+ (name model)
+ (libraries raylib batteries)
+ (instrumentation (backend bisect_ppx)))
