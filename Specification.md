@@ -24,6 +24,8 @@ Or
 
 Spawns a bullet with the given properties if the end condition is false. Here, `tangible` refers to if collision checking is enabled.
 
+The bullet type is either Circle (circular graphic), Arrow (directional graphic), Laser <length>, or Trail <repetitions> <time_interval> (remembers the last few positions with `time_interval` frames between each of them).
+
 ### Define & Update
 `Define <id> = <value>;`: Defines a variable with the given id and numerical value. Note that variable ids begin with '$' like: `$id`. Variables are in scope to every nested pattern.
 
