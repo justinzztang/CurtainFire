@@ -1,6 +1,7 @@
 module Player = Player
 module Bullet = Bullet
 module Enemy = Enemy
+module Ast = Parse.Ast
 open Batteries
 
 (** Which top-level phase the game is in: the title screen, active gameplay, or
@@ -11,59 +12,50 @@ type game_phase =
   | GameOver
   | LevelEnd
 
-(** The full state of the game at one point in time.
+(**The full state of the game at a given point in time.
+   - [phase] represents the phase of the game
+   - [player_bullets] stores all live bullets originating from the player
+   - [enemy_bullets] stores all live bullets originating from enemies
+   - [active_enemies] stores all live enemies
+   - [queued_enemies] stores upcoming enemies that will be spawned at a certain
+     time; this list must be sorted by spawn time
+   - [player] is the player object
+   - [elapsed_frames] is how many frames the game has run
+   - [window_x] and [window_y] are the size of the window
+   - [debug_flag] sets debug mode on or off (disables player collisions) *)
 
-    Abstraction Function: A value [gs : t] represents the current state of the
-    game at time [gs.elapsed_time], where:
-    - [gs.player_bullets] is the set of all bullets fired by the player that are
-      currently active (i.e., whose lifetime has not yet expired).
-    - [gs.enemy_bullets] is the set of all bullets fired by enemies that are
-      currently active.
-    - [gs.active_enemies] is the set of all enemies currently active in the game
-      (i.e., enemies whose spawn time has passed and whose lifetime has not
-      expired).
-    - [gs.queued_enemies] is the set of enemies that have not yet spawned,
-      ordered by increasing spawn_time.
-    - [gs.player] represents the current state of the player.
-
-    Representation Invariant:
-    - All bullets in [player_bullets] and [enemy_bullets] satisfy:
-      [b.spawn_time <= elapsed_time <= b.spawn_time + b.ttl].
-    - All enemies in [active_enemies] satisfy:
-      [e.spawn_time <= elapsed_time <= e.spawn_time + e.ttl].
-    - All enemies in [queued_enemies] satisfy: [e.spawn_time > elapsed_time].
-    - [queued_enemies] is sorted in non-decreasing order of spawn_time.
-    - The [BatDllist] structures are non-empty (BatDllist cannot represent an
-      empty list); the head element of each is a sentinel anchor. *)
 type t = {
   phase : game_phase;
-  player_bullets : Bullet.bullet BatDllist.t;
-  enemy_bullets : Bullet.bullet BatDllist.t;
-  active_enemies : Enemy.enemy BatDllist.t;
-  queued_enemies : Enemy.enemy BatDllist.t;
-  player : Player.player;
-  elapsed_time : float;
-  score : int;
+  player_bullets : (string, Bullet.t Dynarray.t) Hashtbl.t;
+  enemy_bullets : (string, Bullet.t Dynarray.t) Hashtbl.t;
+  active_enemies : (string, Enemy.t Dynarray.t) Hashtbl.t;
+  queued_enemies : Enemy.t list;
+  (*TODO: parts are for another day*)
+  player : Player.t;
+  elapsed_frames : int;
+  window_x : int;
+  window_y : int;
+  debug_flag : bool;
 }
 
-(** [update_state current_time game_state] advances the game one tick to the
-    given [current_time]. This spawns any queued enemies whose spawn_time has
-    arrived, expires bullets and enemies whose ttl has run out, moves all
-    surviving bullets and enemies, emits new enemy bullets per their patterns,
-    and resolves player-bullet vs. enemy collisions (each hit deals 1 damage).
-*)
-val update_state : float -> t -> t
+(**Advance the game state one frame, spawning and updating enemies and bullets*)
+val update_state : int -> t -> t
 
-(** [detect_collision game_state] is [true] iff at least one enemy bullet's
-    position lies within the player's circular hitbox. *)
-val detect_collision : t -> bool
+(**Returns a list of all live enemies*)
+val get_active_enemies : t -> Enemy.t list
 
-(** [detect_collision game_state] is [true] iff at least one player bullet's
-    position lies within the enemy's bounding box. *)
+(**Returns a list of all live enemy bullets*)
+val get_enemy_bullets : t -> Bullet.t list
 
-val detect_enemy_body_collision : t -> bool
+(**Apply a function to all live enemy bullets*)
+val apply_function_to_enemy_bullets : t -> (Bullet.t -> unit) -> unit
 
-(** [enemies_killed_this_frame] tells us how many enemies have died and been
-    removed from the state since the last update. *)
+(**Returns a list of all live player bullets*)
+val get_player_bullets : t -> Bullet.t list
 
-val enemies_killed_this_frame : int ref
+(**Apply a function to all live player bullets*)
+val apply_function_to_player_bullets : t -> (Bullet.t -> unit) -> unit
+
+(**Count the total number of items in a Hashtbl of Dynarrays, used for counting
+   the number of bullets and enemies and so on*)
+val count_hashtable_stuff : ('a, 'b Dynarray.t) Hashtbl.t -> int

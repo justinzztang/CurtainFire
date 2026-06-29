@@ -1,0 +1,91 @@
+Combine[
+
+    // Create a dummy one because otherwise there'll be an array out-of-bounds error when bullets check collision
+    Bullet "despawner" (-1000) (-1000) Purple Circle 0 0 1 999999 True 1 
+        Sleep Until False; 
+        Until Once;
+
+    // 5 progressively denser rings
+    For $i upto 5
+        Sequence[
+            For $j upto (12 + $i*2)
+                Sequence[
+                    Arc 100 0 TAU 500
+                        Bullet Red Arrow 0.2 0 10 4800 
+                            Sequence[
+                                // Randomize angle but ensure it's towards the player
+                                Turn randFloat (PI/2, 3*PI/2) Until Once; 
+                                // Wait until its close to the despawner
+                                Sleep Until Within (%LOOKUP_BULLET_X "despawner" (%ALIVE_BULLETS_COUNT_TAG "despawner" - 1), %LOOKUP_BULLET_Y "despawner" (%ALIVE_BULLETS_COUNT_TAG "despawner" - 1)) 32;
+                                Die;
+                                ];
+                            Until Once;
+                    ;
+                    Nothing Until Elapsed 3;
+                ];
+            ;
+            Nothing Until Elapsed 900;
+        ];
+    ;
+
+    // Despawner bullets spawn from the top, then the left, then the bottom, then the right, and so on 
+    // They also seem to be in a certain range of the player's position
+    Sequence[
+        Nothing Until Elapsed 600;
+        Pulse 180
+            While True
+                Sequence[
+                    Aimed
+                        Bullet "despawner" (%PLAYER_X + randFloat(-30,30)) 950 Purple Circle 0 0 24 200 True 1 
+                            Sequence[
+                                Sleep Until Elapsed 30;
+                                Set_speed 6 Until Instant;
+                                Sleep Until False;
+                            ]; 
+                            Until Once;
+                    ;
+                    Aimed
+                        Bullet "despawner" (50) (%PLAYER_Y + randFloat(-30,30)) Purple Circle 0 0 24 200 True 1 
+                            Sequence[
+                                Sleep Until Elapsed 30;
+                                Set_speed 6 Until Instant;
+                                Sleep Until False;
+                            ]; 
+                            Until Once;
+                    ;
+                    Aimed
+                        Bullet "despawner" (%PLAYER_X + randFloat(-30,30)) (50) Purple Circle 0 0 24 200 True 1 
+                            Sequence[
+                                Sleep Until Elapsed 30;
+                                Set_speed 6 Until Instant;
+                                Sleep Until False;
+                            ]; 
+                            Until Once;
+                    ;
+                    Aimed
+                        Bullet "despawner" 810 (%PLAYER_Y + randFloat(-30,30)) Purple Circle 0 0 24 200 True 1 
+                            Sequence[
+                                Sleep Until Elapsed 30;
+                                Set_speed 6 Until Instant;
+                                Sleep Until False;
+                            ]; 
+                            Until Once;
+                    ;
+                ];
+            ;
+        ;
+    ];
+
+];
+
+
+<end>
+
+sleep until false;
+
+<end>
+430.
+<end>
+500.
+<end>
+1000.

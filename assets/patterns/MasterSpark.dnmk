@@ -1,0 +1,90 @@
+Sequence[
+    Nothing Until Elapsed 120;
+    
+    Combine[
+        Pulse 480
+            Aimed 
+                Bullet White Laser 1000 0 0 200 360 //360 frame TTL so it despawns and we wait for 120 seconds
+                Sequence[
+                    // Charging up...
+                    Set_tangible False Until Instant;
+                    Set_opacity 0.2 Until Elapsed 60;
+                    // Charged up!
+                    Set_tangible True Until Instant;
+                    Set_opacity 1 Until False;
+                ];
+                Until False;
+            ;
+        ;
+        // Just rings at a slightly random angle
+        Sequence[
+            Nothing Until Elapsed 60;
+            Pulse 30
+                Combine[
+                    // Need to explicitly define the variable because otherwise randFloat evaluates to a different number for each spawn 
+                    // It's a bug, I'll fix it if I ever work on this again 
+                    Define $ra = randFloat (-PI/11, PI/11);
+                    Angled $ra
+                        While True
+                            Sequence[
+                                // Should've made a more robust variable system
+                                Iterate $layer upto 2
+                                    Arc 11 0 TAU 1
+                                        Bullet Red Circle (2 + $layer * 5) 30 600 Until Once;
+                                    ;
+                                ;
+                                Iterate $layer upto 2
+                                    Arc 11 0 TAU 1
+                                        Bullet Purple Circle (2 + $layer * 5) 30 600 Until Once;
+                                    ;
+                                ;
+                                Iterate $layer upto 2
+                                    Arc 11 0 TAU 1
+                                        Bullet Blue Circle (2 + $layer * 5) 30 600 Until Once;
+                                    ;
+                                ;
+                                Iterate $layer upto 2
+                                    Arc 11 0 TAU 1
+                                        Bullet Cyan Circle (2 + $layer * 5) 30 600 Until Once;
+                                    ;
+                                ;
+                                Iterate $layer upto 2
+                                    Arc 11 0 TAU 1
+                                        Bullet Green Circle (2 + $layer * 5) 30 600 Until Once;
+                                    ;
+                                ;
+                                Iterate $layer upto 2
+                                    Arc 11 0 TAU 1
+                                        Bullet Yellow Circle (2 + $layer * 5) 30 600 Until Once;
+                                    ;
+                                ;
+                            ];
+                        ;
+                    ;
+                ];
+                
+            ;
+        ];
+    ];
+    
+];
+
+<end>
+
+Sequence[
+    Custom_rect (-13/12) 0.9 Until Elapsed 120;
+    Stop Until Elapsed 360;
+    While True 
+        Sequence[
+            Point (%PLAYER_X, 800) 0.5 Until Elapsed 120;
+            Stop Until Elapsed 360;
+        ];
+    ;
+];
+
+<end>
+430.
+<end>
+700.
+<end>
+1000.

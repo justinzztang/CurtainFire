@@ -1,43 +1,64 @@
-module Movement = Movement
+module Obj = Object
+module Ast = Parse.Ast
+open Batteries
+open Parse.Util
 
-(** The visual / behavioral kind of a bullet. [Anchor] is a sentinel used as a
-    placeholder in the bullet list and is never moved or rendered as a normal
-    bullet; [Circle], [Oval], [Arrow], [Laser], and [Pellet] are the standard
-    bullet shapes; [Custom] is reserved for one-off shapes. *)
+(** Type of bullet that defines its appearance and collision detection. [Circle]
+    [Arrow] and [Knife] all have simple radial hitboxes, while [Laser(length)]
+    extends its hitbox and appearance forwards, and
+    [Trail(repetitions, time_interval, memory_storage)] creates several line
+    segments to previous locations. Note: [Knife] does not have a graphic yet.
+*)
 type bullet_type =
-  | Anchor
   | Circle
-  | Oval
   | Arrow
-  | Laser
-  | Pellet
-  | Custom
+  | Knife
+  | Laser of float (*length of laser*)
+  | Trail of
+      int
+      * int
+      * (float * float) BatDeque.t (*repetitions, interval, list to store*)
 
-(** Abstraction Function: A value [b : bullet] represents a projectile in the
-    game, where:
-    - (b.x, b.y) is the position of the bullet in continuous (subpixel) space.
-    - [b.bullet_type] determines the visual or behavioral type of the bullet.
-    - [b.spawn_time] is the time at which the bullet was created.
-    - [b.ttl] is the duration for which the bullet remains active.
-    - [b.angle] and [b.speed] define the direction and magnitude of motion.
+type bullet_color =
+  | White
+  | Red
+  | Orange
+  | Yellow
+  | Green
+  | Cyan
+  | Blue
+  | Purple
 
-    Representation Invariant:
-    - [b.ttl >= 0.0]
-    - [b.speed >= 0.0] *)
-type bullet = {
-  x : float; (* we need subpixel precision to make things actually move right*)
-  y : float;
+(** [bullet] extends a generic object with a type, color, [behavior], hitbox
+    radius, and a parent environment for tracking variables*)
+
+type t = {
+  mutable object_properties : Obj.properties;
   bullet_type : bullet_type;
-  spawn_time : float;
-  ttl : float; (* time-to-live; how long its active *)
-  velocity : Movement.velocity;
+  bullet_color : bullet_color;
+  behavior : Ast.behavior;
+  hitbox_radius : float;
+  parent_env : float ref segmented_list;
 }
 
-(** [create_bullet x y bullet_type ttl path current_time] initializes bullet
-    with specified arguments *)
-val create_bullet :
-  float -> float -> bullet_type -> float -> Movement.velocity -> float -> bullet
+(** [create_bullet tag x y speed theta current_frame ttl bullet_color
+     bullet_type behavior hitbox_radius tangible opacity parent_properties
+     parent_env] creates a bullet with the given properties *)
 
-(** [move_bullet b current_time] updates the position of a bullet based on the
-    current time and the velocity function defined in [b.velocity]*)
-val move_bullet : bullet -> float -> bullet
+val create_bullet :
+  string ->
+  float ->
+  float ->
+  float ->
+  float ->
+  int ->
+  int ->
+  bullet_color ->
+  bullet_type ->
+  Ast.behavior ->
+  float ->
+  bool ->
+  float ->
+  Obj.properties option ->
+  float ref segmented_list ->
+  t

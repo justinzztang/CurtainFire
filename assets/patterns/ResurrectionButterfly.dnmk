@@ -1,0 +1,128 @@
+// As repetition increases, bullets get faster
+For $repetition upto 10
+
+    Combine[
+        // Laser "stars" that get progressively denser
+        Sequence[
+            Arc (3+$repetition) (-PI/2 + PI/2/(3+$repetition)) (1.5*PI + PI/2/(3+$repetition)) 130
+                Bullet Cyan Laser 1000 0 0 16 270 
+                Sequence[
+                    // Charging up...
+                    Set_opacity 0.2 Until Instant;
+                    Set_tangible False Until Instant;
+                    Orbit (%PARENT_X, %PARENT_Y) 0 (-PI/(3+$repetition)/50) Until Elapsed 50;
+                    Sleep Until Elapsed 40;
+                    // Charged!
+                    Set_opacity 1 Until Instant;
+                    Set_tangible True Until False;
+                    ];
+                Until Once;
+            ;
+            Nothing Until Elapsed 400;
+        ];
+
+        Sequence[
+            Arc (3+$repetition) (-PI/2 - PI/2/(3+$repetition)) (1.5*PI - PI/2/(3+$repetition)) 130
+                Bullet Purple Laser 1000 0 0 16 270 
+                Sequence[
+                    Set_opacity 0.2 Until Instant;
+                    Set_tangible False Until Instant;
+                    Orbit (%PARENT_X, %PARENT_Y) 0 (PI/(3+$repetition)/50) Until Elapsed 50;
+                    Sleep Until Elapsed 40;
+                    Set_opacity 1 Until Instant;
+                    Set_tangible True Until False;
+                ];
+                Until Once;
+            ;
+            Nothing Until Elapsed 400;
+        ];
+
+        // 6 offset rings that "unfold" after some time
+        Sequence[
+            For $i upto 6
+                Sequence[
+                    Arc 28 (-PI/2 - TAU/56*($i-0.5)) (1.5*PI - TAU/56*($i-0.5)) 0
+                        Iterate $j upto 3
+                            If $i mod 2 == 0 
+                            then
+                                Bullet Blue Arrow 0 0 20 500 
+                                Sequence[
+                                    Forwards (3+$repetition*0.15) Until Elapsed 120;
+                                    Set_speed (%SELF_SPEED + $j*0.02) Until False;
+                                ];
+                                Until Once;
+                            else
+                                Bullet Purple Arrow 0 0 20 500 
+                                Sequence[
+                                    Forwards (3+$repetition*0.15) Until Elapsed 120;
+                                    Set_speed (%SELF_SPEED + $j*0.02) Until False;
+                                ];
+                                Until Once;
+                            ;
+                        ;
+                    ;
+                    Nothing Until Elapsed 10;
+                ];
+            ;
+            Nothing Until Elapsed 90;
+
+            Define $layercounter = 0;
+
+            // 4 rings with 2 layers each that also "unfold"
+            For $i upto 4
+                Sequence[
+                    Iterate $k upto 2
+                        Arc 36 0 TAU $k*32
+                            Iterate $j upto 3
+                                Bullet Red Arrow 0 0 20 500 
+                                Sequence[
+                                    Define $l = $i;
+                                    Steer (3 + $k * 0.1 +$repetition*(0.15+$k*0.02)) ( sign(($l mod 2)-0.5) * (0.003 + $l*0.0005)) Until Elapsed 120;
+                                    Update $layercounter = $layercounter + 1;
+                                    Set_speed (%SELF_SPEED + $j*0.02) Until False;
+                                ];
+                                Until Once;
+                            ;
+                        ;
+                    ;
+                    Nothing Until Elapsed 30;
+                ];
+            ;
+            
+            Nothing Until Elapsed 30;
+
+            // Ring of big bullets that "unfold" as well
+            Angled TAU/48
+                Arc 24 0 TAU 0
+                    Iterate $j upto 3
+                        Bullet Red Circle 0 0 70 500 
+                        Sequence[
+                            Forwards (3+$repetition*0.15) Until Elapsed 120;
+                            Set_speed (%SELF_SPEED + $j*0.02) Until False;
+                        ];
+                        Until Once;
+                    ;
+                ;
+            ;
+
+            Nothing Until Elapsed 60;
+        ];
+    ];
+;
+
+<end>
+
+While True
+    Sequence[
+        Sleep Until Elapsed 1200;
+        Point (%PLAYER_X, 800) 1 Until Elapsed 60;
+        Stop Until Once;
+    ];
+;
+
+<end>
+430.
+<end>
+800.
+<end>
+1000.

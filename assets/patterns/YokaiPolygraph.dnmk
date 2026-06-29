@@ -1,0 +1,43 @@
+Sequence[
+    Angled PI/8
+        Combine[
+            // Spinning lasers
+            Arc 4 0 TAU 0
+                Bullet Blue Laser 1000 0 0 8 99999 
+                    Steer 0 (0.004 + 0.002/(3000)*min(%SELF_LIFETIME,3000)) Until False; 
+                    Until Once;
+            ;
+            Arc 4 PI/4 (TAU+PI/4) 0
+                Bullet Red Laser 1000 0 0 8 99999 
+                    Steer 0 (0.004 + 0.002/(3000)*min(%SELF_LIFETIME,3000)) Until False; 
+                    Until Once;
+            ;
+            // Match the angular speed of the lasers
+            Spin (%SELF_X, %SELF_Y) (0.004 + 0.002/(3000)*min(%SELF_LIFETIME,3000))
+                Combine[
+                    Arc 4 0 TAU (dist (%SELF_X, %SELF_Y) (%PLAYER_X, %PLAYER_Y) ) // Spawn bullets at the same distance from "Koishi" as the player
+                        Pulse 7
+                            Bullet Blue Circle 0 5 ((TAU/8)/(0.004 + 0.002/(3000)*min(%SELF_LIFETIME,3000))) Until False; // TTL is how long it will take for the next laser to spin and reach it 
+                        ;
+                    ;
+                    Arc 4 PI/4 (TAU+PI/4) (dist (%SELF_X, %SELF_Y) (%PLAYER_X, %PLAYER_Y) )
+                        Pulse 7
+                            Bullet Red Circle 0 5 ((TAU/8)/(0.004 + 0.002/(3000)*min(%SELF_LIFETIME,3000))) Until False;
+                        ;
+                    ;
+                ];
+            ;
+        ];
+    ;
+];
+
+<end>
+
+sleep until false;
+
+<end>
+430.
+<end>
+500.
+<end>
+1000.

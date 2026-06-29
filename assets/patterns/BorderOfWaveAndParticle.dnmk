@@ -1,0 +1,16 @@
+Spin (%SELF_X , %SELF_Y) sin(%SELF_LIFETIME * PI / 180)*0.1047198 
+    Arc 5 0 TAU 0
+        Bullet Red Circle 5 8 600 Until False;
+    ;
+; 
+
+<end>
+
+sleep until false;
+
+<end>
+430.
+<end>
+800.
+<end>
+1000.

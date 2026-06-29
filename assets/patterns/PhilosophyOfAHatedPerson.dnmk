@@ -1,0 +1,152 @@
+Sequence[
+
+    Arc 32 0 TAU 0 
+        Bullet Purple Circle 5 50 300 Until Once;
+    ;
+
+    Define $layernum = 0;
+    Timed 60 (60*19)
+        Pulse 8
+            Combine[
+
+                Update $layernum = $layernum + 1;
+                // Every 5 layers skip a spawn to create a hole in the bullets 
+                Conditional (not ($layernum mod 5 == 0))
+                    Iterate $i upto 6
+                        Combine[
+                            Bullet (((($i*143 - $layernum*12) mod 860) + 860) mod 860) 1010 Blue Circle 2.1 (-PI/2) 12 (min (600, 60*19 - %CURRENT_FRAME)) Until False; // Wrap around
+                            Bullet (((($i*143 - $layernum*12) mod 860) + 860) mod 860) 1010 Blue Circle 2.1 (-PI/2) 100 (min (600, 60*19 - %CURRENT_FRAME)) 
+                            While True
+                                Sequence[
+                                        // Constantly set the visibility depending on the distance to "Koishi"
+                                        Set_opacity (151 - dist (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) (%SELF_X, %SELF_Y)) Until Instant; 
+                                        Set_tangible (Within (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) 150) Until Once;
+                                    ];
+                            ;
+                            Until False;
+                        ];
+                    ;
+                ;
+                
+            ];
+        ;
+    ;
+
+    Timed (60*20) (60*44)
+        Pulse 8
+            Combine[
+                
+                Update $layernum = $layernum + 1;
+                
+                Conditional (not ($layernum mod 6 < 2)) // Skip 2 layers this time 
+                    Combine[
+
+                        Iterate $i upto 7
+                            Combine[
+                                Bullet 870 (((($i*143 - $layernum*12) mod 1000) + 1000) mod 1000) Yellow Circle 2.1 (PI) 12 (min (600, 60*45 - %CURRENT_FRAME)) Until False;
+                                Bullet 870 (((($i*143 - $layernum*12) mod 1000) + 1000) mod 1000) Yellow Circle 2.1 (PI) 100 (min (600, 60*45 - %CURRENT_FRAME)) 
+                                While True
+                                    Sequence[
+                                            Set_opacity (151 - dist (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) (%SELF_X, %SELF_Y)) Until Instant;
+                                            Set_tangible (Within (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) 150) Until Once;
+                                        ];
+                                ;
+                                Until False;
+                            ];
+                        ;
+
+                        Iterate $i upto 6
+                            Combine[
+                                Bullet (((($i*143 - $layernum*12) mod 860) + 860) mod 860) (-10) Yellow Circle 2.1 (PI/2) 12 (min (600, 60*45 - %CURRENT_FRAME)) Until False;
+                                Bullet (((($i*143 - $layernum*12) mod 860) + 860) mod 860) (-10) Yellow Circle 2.1 (PI/2) 100 (min (600, 60*45 - %CURRENT_FRAME)) 
+                                While True
+                                    Sequence[
+                                            Set_opacity (151 - dist (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) (%SELF_X, %SELF_Y)) Until Instant;
+                                            Set_tangible (Within (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) 150) Until Once;
+                                        ];
+                                ;
+                                Until False;
+                            ];
+                        ;
+
+                    ];
+                ;
+            ];
+        ;
+    ;
+
+    Timed (60*45) (60*60)
+        Pulse 90
+            Combine[
+                
+                Iterate $i upto 16
+                    Combine[
+                        Bullet 870 ($i*1000/15) Red Circle 2.1 PI 12 (min (600, 60*60 - %CURRENT_FRAME)) Until False;
+                        Bullet 870 ($i*1000/15) Red Circle 2.1 PI 100 (min (600, 60*60 - %CURRENT_FRAME)) 
+                        While True
+                            Sequence[
+                                    Set_opacity (151 - dist (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) (%SELF_X, %SELF_Y)) Until Instant;
+                                    Set_tangible (Within (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) 150) Until Once;
+                                ];
+                        ;
+                        Until False;
+                    ];
+                ;
+                
+                Iterate $i upto 13
+                    Combine[
+                        Bullet ($i*860/12) (-10) Red Circle 2.1 PI/2 12 (min (600, 60*60 - %CURRENT_FRAME)) Until False;
+                        Bullet ($i*860/12) (-10) Red Circle 2.1 PI/2 100 (min (600, 60*60 - %CURRENT_FRAME)) 
+                        While True
+                            Sequence[
+                                    Set_opacity (151 - dist (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) (%SELF_X, %SELF_Y)) Until Instant;
+                                    Set_tangible (Within (%CLOSEST_ENEMY_X, %CLOSEST_ENEMY_Y) 150) Until Once;
+                                ];
+                        ;
+                        Until False;
+                    ];
+                    
+                ;
+                
+            ];
+        ;
+    ;
+];
+
+<end>
+
+Sequence[
+    Sleep Until Elapsed 420;
+    Point (150, 850) 5 Until Elapsed 60;
+    Point (150, 150) 5 Until Elapsed 160;
+    Point (150, 850) 5 Until Elapsed 160;
+    Point (150, 150) 5 Until Elapsed 160;
+    Point (710, 150) 3.5 Until Elapsed 180;
+    Point (200, 850) 25 Until Within (200,850) 25;
+    Stop Until After (60*27);
+    Point (150, 150) 5 Until Elapsed 160;
+    Point (710, 150) 3.5 Until Elapsed 160;
+    Point (710, 850) 5 Until Elapsed 160;
+    Point (710, 150) 5 Until Elapsed 160;
+    Point (150, 150) 3.5 Until Elapsed 160;
+    Point (150, 850) 5 Until Elapsed 160;
+    Point (150, 150) 5 Until Elapsed 160;
+    While Before 3600
+        Sequence[
+            Point (150, 850) 11.5 Until Elapsed 60;
+            Point (710, 850) 11 Until Elapsed 60;
+            Point (710, 150) 11.5 Until Elapsed 60;
+            Point (150, 150) 11 Until Elapsed 60;
+        ];
+    ;
+    Point (430, 800) 10 Until Within (430,800) 25;
+    Set_XY 430 800 Until Once;
+    Stop Until False;
+];
+
+<end>
+430.
+<end>
+800.
+<end>
+1000.

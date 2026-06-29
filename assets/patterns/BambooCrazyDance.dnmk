@@ -1,0 +1,68 @@
+Combine[
+    // Rings constantly rotate slightly
+    Angled floor (%SELF_LIFETIME/30) * PI/70
+        Pulse 30
+            Arc 35 PI/2 (2.5*PI) 0 
+                Bullet Purple Arrow 0 0 14 300 
+                Sequence[
+                    // Slows down to a stop, changes angle, then does the same thing again 
+                    Forwards (60-%SELF_LIFETIME)/8 Until Elapsed 60; 
+                    Stop Until Elapsed 15;
+                    Angled_rel (50+75-%SELF_LIFETIME)/8 (-PI/12) Until Elapsed 50;
+                    Stop Until Elapsed 10;
+                    Angled_rel 6 (PI/6) Until False;
+                ];
+                Until False;
+            ;
+        ;
+    ;
+    While True
+        Sequence[
+            Nothing Until Elapsed 341; // Syncs up with the main bullet rings 
+            Sequence[
+                Combine[
+                    Pulse 30
+                        Angled floor (%SELF_LIFETIME/30) * PI/70 + PI/12
+                            Arc 35 PI/2 (2.5*PI) 0 
+                                Bullet Purple Arrow 0 0 14 300 
+                                Sequence[
+                                    Forwards (60-%SELF_LIFETIME)/8 Until Elapsed 60;
+                                    Stop Until Elapsed 15;
+                                    Angled_rel (50+75-%SELF_LIFETIME)/8 (PI/12) Until Elapsed 50; // Rotate in the opposite direction
+                                    Stop Until Elapsed 10;
+                                    Angled_rel 6 (-PI/6) Until False;
+                                ];
+                                Until Elapsed 89;
+                            ;
+                        ;
+                    ;
+                    For $i upto 35 // Not all at once
+                        Bullet Green Trail 2 50 10 (TAU/35*$i) 6 300 Until Once;
+                    ;
+                ];
+                Nothing Until Elapsed (341-30); // Subtract 30 cause trial and error idk
+            ];
+        ];
+    ;
+];
+
+
+<end>
+
+Sequence[
+    Sleep Until Elapsed 480;
+    While True
+        Sequence[
+            Define $targetx = %PLAYER_X;
+            Point ($targetx, 700) 0.5 Until Elapsed 60;
+            Stop Until Elapsed 480;
+        ]; 
+    ;
+];
+
+<end>
+430.
+<end>
+700.
+<end>
+1000.

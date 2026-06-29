@@ -1,0 +1,125 @@
+Sequence[
+
+    Combine[
+        Arc 8 0 TAU 0
+            Iterate $layer upto 8
+                Iterate $angle upto 3 // One straight, one pointed left, one pointed right 
+                    Bullet Blue Circle (1.5 - $layer*0.05) ($angle-1)*(max($layer/5, $layer-3))*TAU/360 6 1200 Until Once; // Layers get faster to create the separation, and the fastest layers have a reduced angle delta to make it more pointy
+                ;
+            ;
+        ;
+        Arc 8 (TAU/16) (17/16*TAU) 0
+            Iterate $layer upto 8
+                Iterate $angle upto 2
+                    Bullet Blue Circle (1.5 - $layer*0.05) ($angle-0.5)*(max($layer/5, $layer-3))*TAU/360 6 1200 Until Once;
+                ;
+            ;
+        ;
+    ];
+
+    Nothing Until Elapsed 120;
+    Define $targetx = %PLAYER_X;
+    Define $targety = %PLAYER_Y;
+
+    Combine[
+        While True
+            Sequence[
+                // Every 200ish frames, update the target for the 8 trails
+                Update $targetx = %PLAYER_X;
+                Update $targety = %PLAYER_Y;
+                Nothing Until Elapsed 200;
+            ];
+        ;
+
+        Iterate $spoke upto 8 
+            Bullet Blue Trail 10 1 0 0 4 6000 
+                While True 
+                    Sequence[
+                        // Starts visible, reaches the target after 120 frames, then turns invisible, repeat
+                        Set_tangible True Until Instant; Set_opacity 1 Until Instant;
+                        Set_angle atan2 ( $targety - %SELF_Y , $targetx - %SELF_X) Until Instant;
+                        Angled_rel 10 ($spoke * TAU/8) Until Elapsed 10;
+                        Define $distance = dist (%SELF_X, %SELF_Y) ($targetx, $targety);
+                        Point ($targetx, $targety) ($distance / 100) Until Elapsed 110;
+                        Set_tangible False Until Instant; Set_opacity 0 Until Instant;
+                        Stop Until Elapsed 80;
+                    ];
+                ; Until Once;
+        ;
+
+        // 8 "spokes" of the wheel where bullets radiate out, then back in, while also rotating around
+        Iterate $spoke upto 8
+            Combine[
+                Bullet Cyan Circle 0 (TAU/8*$spoke) 12 6000 
+                    While True 
+                        Sequence[
+                            Set_tangible False Until Instant; Set_opacity 0 Until Instant; Set_XY $targetx $targety Until Instant;
+                            Stop Until Elapsed 120;
+                            Set_tangible True Until Instant; Set_opacity 1 Until Instant;
+                            Steer 1 (-TAU/80) Until Elapsed 80;
+                        ];
+                    ; Until Once;
+                Bullet Blue Circle 0 (TAU/8*$spoke) 12 6000 
+                    While True 
+                        sequence[
+                            Set_tangible False Until Instant; Set_opacity 0 Until Instant; Set_XY $targetx $targety Until Instant;
+                            Stop Until Elapsed 120;
+                            Set_tangible True Until Instant; Set_opacity 1 Until Instant;
+                            Steer 2.3 TAU/80 Until Elapsed 80;
+                        ];
+                    ; Until Once;
+                // The outer 2 layers have 2 bullets per "part" of the wheel
+                Iterate $i upto 2
+                    Bullet Purple Circle 0 (TAU/8*$spoke + ($i-0.5)*0.15) 12 6000 
+                        While True 
+                            sequence[
+                                Set_tangible False Until Instant; Set_opacity 0 Until Instant; Set_XY $targetx $targety Until Instant;
+                                Stop Until Elapsed 120;
+                                Set_tangible True Until Instant; Set_opacity 1 Until Instant;
+                                Steer 3.6 (-TAU/80) Until Elapsed 80;
+                            ];
+                        ; Until Once;
+                ;
+                Iterate $i upto 2
+                    Bullet Red Circle 0 (TAU/8*$spoke + ($i-0.5)*0.15) 12 6000 
+                        While True 
+                            sequence[
+                                Set_tangible False Until Instant; Set_opacity 0 Until Instant; Set_XY $targetx $targety Until Instant;
+                                Stop Until Elapsed 120;
+                                Set_tangible True Until Instant; Set_opacity 1 Until Instant;
+                                Steer 5 TAU/80 Until Elapsed 80;
+                            ];
+                        ; Until Once;
+                ;
+            ];
+        ;
+
+        // 3 rings with alternating angles
+        Sequence[
+            Nothing Until Elapsed 60;
+            Pulse 60
+                Aimed
+                    Iterate $layer upto 3
+                        Angled $layer*(TAU/36)
+                            Arc 18 0 TAU 0
+                                Bullet Blue Circle (3+$layer) 24 500 Until False;
+                            ;
+                        ;
+                    ;
+                ;
+            ;
+        ];
+        
+    ];
+]; 
+
+<end>
+
+sleep Until False;
+
+<end>
+430.
+<end>
+800.
+<end>
+1000.

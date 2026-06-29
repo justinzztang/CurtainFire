@@ -1,6 +1,6 @@
 (lang dune 3.22)
 
-(name final_project)
+(name curtainfire)
 
 (generate_opam_files true)
 
@@ -16,10 +16,10 @@
 (documentation https://url/to/documentation)
 
 (package
- (name final_project)
+ (name curtainfire)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml)
+ (depends ocaml raylib unix mtime core)
  (tags
   ("add topics" "to describe" your project)))
 
