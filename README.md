@@ -38,4 +38,4 @@ dune exec bin/main.exe <filename> DEATH_ON
 The specification for the language is provided in [`Specification.md`](Specification.md).
 
 # Acknowledgements
-This project is an expansion of a school assignment. Thanks to my partners!
+This project is an expansion of a school assignment. Many thanks to my partners!
