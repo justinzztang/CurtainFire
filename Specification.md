@@ -174,6 +174,16 @@ Neither should be treated as a genuine boolean value.
 
 `Within (<x>,<y>) <r>` evaluates true if the object is within a certain radius of a point.
 
+# State Queries
+
+Special variables whose names begin with `%` are used to query information about the game state. 
+
+### Lookups
+
+Since game objects are stored in arrays that are accessed through using their tags as keys, queries such as `%LOOKUP_BULLET_X` have the syntax `<query> <tag> <index>` to tell the engine to look up the property of the object with that given tag at the given index of the engine's list of objects.
+
+For example: If we used Python dicts of arrays to store bullets, `%LOOKUP_BULLET_X "tag" 0` will get the properties of enemy_bullet_map["tag"][0].
+
 # Full Grammar
 
 Anything that didn't have its own description is probably a common, already documented function.
